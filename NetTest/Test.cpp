@@ -4,6 +4,7 @@
 
 Test::Test()
 	: delayLength(1000)
+	, stayAlive(true)
 {
 	// Addresses to monitor
 	// Can contain Domain Names or IPs
