@@ -68,7 +68,7 @@ void Test::ping(unsigned int domainID)
 {
 	const std::string domainName = addresses.at(domainID);
 	// Create local Windows Command for pinging domains/IPs
-	const std::string command = "ping " + domainName + " -n 1 -w 1 > NUL";
+	const std::string command = "ping " + domainName + " -n 1 > NUL";
 	bool reachable = false;
 
 	do
@@ -77,14 +77,14 @@ void Test::ping(unsigned int domainID)
 		if (system(command.c_str()) == 0)
 		{
 			updateStatusList(domainID, true);
+			// delay ping if successful 
+			Sleep(delayLength * 2);
 		}
 		//unreachable
 		else
 		{
 			updateStatusList(domainID, false);
 		}
-		// Don't ping too much
-		Sleep(delayLength * 2);
 	} while (stayAlive);
 
 	std::cout << domainID << ".";
@@ -116,7 +116,7 @@ void Test::displayStatusList()
 	do
 	{
 		// Clear Screen on each refresh
-		// TODO: Only refresh when there is a change in the overall status' of provided domains/IPs
+		// TODO: Only refresh when there is a change list is updated
 		system("cls");
 
 		// Program Heading
