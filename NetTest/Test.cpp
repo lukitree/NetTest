@@ -16,7 +16,6 @@ Test::Test()
 		"google.co.uk",
 		"google.co.jp",
 		"google.ru",
-
 	};
 
 	// syncronize lists to address list
@@ -161,7 +160,14 @@ void Test::displayStatusList()
 
 				//StatusMutex.unlock();
 
-				std::cout << "  " + status + "\t" + addresses.at(i) + "\t" + "(" + std::to_string(successfulPings.at(i)) + "/" + std::to_string(pingTotal.at(i)) + ")" + " " + std::to_string(percentages.at(i)) + "%";
+				std::cout << "  " + status + "\t";
+				int strlen = 15;
+				if (addresses.at(i).length() < strlen) strlen = addresses.at(i).length();
+				for (int s = 0; s < strlen; ++s)
+				{
+					std::cout << addresses[i][s];
+				}
+				std::cout << "\t" << "(" + std::to_string(successfulPings.at(i)) + "/" + std::to_string(pingTotal.at(i)) + ")" + " " + std::to_string(percentages.at(i)) + "%";
 				std::cout << std::endl;
 
 			}
