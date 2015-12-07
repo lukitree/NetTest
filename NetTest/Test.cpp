@@ -32,19 +32,15 @@ Test::Test()
 
 Test::~Test()
 {
-	std::cout << "Killing running threads..." << std::endl;
-
-	// Kill threads
-	stayAlive = false;
-
-
-	// detach threads
-	for (auto &t : threads)
+	for (auto &i : threads)
 	{
-		t.join();
+		if (i.joinable())
+		{
+			i.detach();
+		}
 	}
 
-	std::cout << "Exiting..." << std::endl;
+	std::cout << "Exiting" << std::endl;
 }
 
 
@@ -61,6 +57,18 @@ void Test::run()
 
 	// User presses "Enter" the quit application
 	getchar();
+
+	std::cout << "Killing running threads..." << std::endl;
+
+	// Kill threads
+	stayAlive = false;
+
+
+	// detach threads
+	for (auto &t : threads)
+	{
+		t.join();
+	}
 }
 
 
