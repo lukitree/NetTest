@@ -36,7 +36,7 @@ Test::~Test()
 	{
 		if (i.joinable())
 		{
-			i.detach();
+			i.join();
 		}
 	}
 
