@@ -32,6 +32,7 @@ private:
 	std::vector<unsigned int>			successfulPings;
 	std::vector<unsigned int>			percentages;
 	bool						stayAlive;
+	bool						UiUpdate;
 	const unsigned int				delayLength;
 
 };

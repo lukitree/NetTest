@@ -2,8 +2,9 @@
 
 
 Test::Test()
-	: delayLength(1000)
+	: delayLength(2000)
 	, stayAlive(true)
+	, UiUpdate(false)
 {
 	// Addresses to monitor
 	// Can contain Domain Names or IPs
@@ -84,13 +85,14 @@ void Test::ping(unsigned int domainID)
 		{
 			updateStatusList(domainID, true);
 			// delay ping if successful 
-			Sleep(delayLength * 2);
+			Sleep(delayLength);
 		}
 		//unreachable
 		else
 		{
 			updateStatusList(domainID, false);
 		}
+		UiUpdate = true;
 	} while (stayAlive);
 
 	std::cout << domainID << " ";
@@ -122,51 +124,53 @@ void Test::displayStatusList()
 	do
 	{
 		// Clear Screen on each refresh
-		// TODO: Only refresh when there is a change list is updated
-		system("cls");
-
-		// Program Heading
-		std::cout << "      Net Test " << VERSION << std::endl;
-		std::cout << std::endl;
-		std::cout << SEPERATOR;
-		std::cout << std::endl;
-		std::cout << std::endl;
-
-		// Iterate through domain's list to display its statuses
-		for (int i = 0; i < addresses.size(); ++i)
+		if (UiUpdate == true)
 		{
-			std::string status;
-			//StatusMutex.lock();
-			unsigned int reachable = domainStatus.at(i);
+			UiUpdate = false; // reset after updating ui
 
-			switch (reachable)
+			system("cls");
+
+			// Program Heading
+			std::cout << "      Net Test " << VERSION << std::endl;
+			std::cout << std::endl;
+			std::cout << SEPERATOR;
+			std::cout << std::endl;
+			std::cout << std::endl;
+
+			// Iterate through domain's list to display its statuses
+			for (int i = 0; i < addresses.size(); ++i)
 			{
-			case 0:	    // unreachable
-				status = "-";
-				break;
-			case 1:	    // reachable
-				status = "+";
-				break;
-			case 2:	    // pending testing
-				status = "?";
-				break;
-			default:    // error
-				status = "!";
+				std::string status;
+				//StatusMutex.lock();
+				unsigned int reachable = domainStatus.at(i);
+
+				switch (reachable)
+				{
+				case 0:	    // unreachable
+					status = "-";
+					break;
+				case 1:	    // reachable
+					status = "+";
+					break;
+				case 2:	    // pending testing
+					status = "?";
+					break;
+				default:    // error
+					status = "!";
+				}
+
+				//StatusMutex.unlock();
+
+				std::cout << "  " + status + "\t" + addresses.at(i) + "\t" + "(" + std::to_string(successfulPings.at(i)) + "/" + std::to_string(pingTotal.at(i)) + ")" + " " + std::to_string(percentages.at(i)) + "%";
+				std::cout << std::endl;
+
 			}
 
-			//StatusMutex.unlock();
-
-			std::cout << "  " + status + "\t" + addresses.at(i) + "\t" + "(" + std::to_string(successfulPings.at(i)) + "/" + std::to_string(pingTotal.at(i)) + ")" + " " + std::to_string(percentages.at(i)) + "%";
 			std::cout << std::endl;
+			std::cout << SEPERATOR;
+			std::cout << std::endl;
+			std::cout << std::endl;
+			std::cout << "Press \"Enter\" to exit." << std::endl;
 		}
-
-		std::cout << std::endl;
-		std::cout << SEPERATOR;
-		std::cout << std::endl;
-		std::cout << std::endl;
-		std::cout << "Press \"Enter\" to exit." << std::endl;
-
-		// Don't thrash the display (too blinky)
-		Sleep(delayLength);
 	} while (stayAlive);
 }
