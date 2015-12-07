@@ -7,6 +7,8 @@
 #include <iostream>
 #include <Windows.h>
 
+const std::string VERSION = "v0.02";
+
 class Test
 {
 public:
