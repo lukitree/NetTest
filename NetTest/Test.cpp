@@ -56,13 +56,12 @@ void Test::run()
 	}
 
 	// User presses "Enter" the quit application
-	getchar();
+	getchar(); //Exit when enter is pressed
 
 	std::cout << "Killing running threads..." << std::endl;
 
 	// Kill threads
 	stayAlive = false;
-
 
 	// detach threads
 	for (auto &t : threads)
@@ -95,7 +94,7 @@ void Test::ping(unsigned int domainID)
 		}
 	} while (stayAlive);
 
-	std::cout << domainID << ".";
+	std::cout << domainID << " ";
 }
 
 
