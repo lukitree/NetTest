@@ -9,6 +9,19 @@
 
 const std::string VERSION = "v0.02";
 
+struct STAT
+{
+	std::string					address;
+	unsigned int					total;
+	unsigned int					totalOverall;
+	unsigned int 					successful;
+	unsigned int					successfulOverall;
+	unsigned int 					percentage() { return ((float)successful / (float)total) * 100; };
+	unsigned int 					percentageOverall() { return ((float)successfulOverall / (float)totalOverall) * 100; };
+	unsigned int 					reachable;
+	unsigned int					ID;
+};
+
 class Test
 {
 public:
@@ -19,21 +32,22 @@ public:
 	void						run();
 
 private:
-	void						ping(unsigned int domainID);
-	void 						updateStatusList(const unsigned int domainID, bool reachable);
-	void 						displayStatusList();
+	void						ping(STAT &stat);
+	void 						update(STAT &stat, bool reachable);
+	void 						display();
 
 private:
-	//std::mutex					StatusMutex;
-	std::vector<std::thread>			threads;
-	std::vector<std::string> 			addresses;
-	std::vector<unsigned int>			domainStatus;
-	std::vector<unsigned int>			pingTotal;
-	std::vector<unsigned int>			successfulPings;
-	std::vector<unsigned int>			percentages;
-	bool						stayAlive;
-	bool						UiUpdate;
-	const unsigned int				delayLength;
+	std::vector<std::thread>			mThreads;
+	//std::vector<std::string> 			addresses;
+	//std::vector<unsigned int>			domainStatus;
+	//std::vector<unsigned int>			pingTotal;
+	//std::vector<unsigned int>			successfulPings;
+	//std::vector<unsigned int>			percentages;
+	std::vector<STAT>				mStats;
+	std::mutex					mStatsMutex;
+	bool						mStayAlive;
+	bool						mUiUpdate;
+	const unsigned int				cDelayLength;
 
 };
 

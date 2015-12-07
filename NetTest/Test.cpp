@@ -2,13 +2,13 @@
 
 
 Test::Test()
-	: delayLength(2000)
-	, stayAlive(true)
-	, UiUpdate(false)
+	: cDelayLength(1000)
+	, mStayAlive(true)
+	, mUiUpdate(true)
 {
 	// Addresses to monitor
 	// Can contain Domain Names or IPs
-	addresses =
+	std::vector<std::string> addresses =
 	{
 		"192.168.1.1",
 		"google.com",
@@ -18,20 +18,27 @@ Test::Test()
 		"google.ru",
 	};
 
-	// syncronize lists to address list
 	for (auto &i : addresses)
 	{
-		domainStatus.push_back(2);	// default "Testing" state
-		pingTotal.push_back(0);
-		successfulPings.push_back(0);
-		percentages.push_back(0);
+		static int id = 0;
+		STAT stat;
+		stat.address = i;
+		stat.total = 0;
+		stat.totalOverall = 0;
+		stat.successful = 0;
+		stat.successfulOverall = 0;
+		stat.reachable = 2;
+		stat.ID = id;
+		++id;
+
+		mStats.push_back(stat);
 	}
 }
 
 
 Test::~Test()
 {
-	for (auto &i : threads)
+	for (auto &i : mThreads)
 	{
 		if (i.joinable())
 		{
@@ -46,12 +53,12 @@ Test::~Test()
 void Test::run()
 {
 	// Create a thread for displaying the domain's status
-	threads.push_back(std::thread(&Test::displayStatusList, this));
+	mThreads.push_back(std::thread(&Test::display, this));
 
 	// Create a thread for each item in domains
-	for (int i = 0; i < addresses.size(); ++i)
+	for (int i = 0; i < mStats.size(); ++i)
 	{
-		threads.push_back(std::thread(&Test::ping, this, i));
+		mThreads.push_back(std::thread(&Test::ping, this, std::ref(mStats[i])));
 	}
 
 	// User presses "Enter" the quit application
@@ -60,21 +67,20 @@ void Test::run()
 	std::cout << "Killing running threads..." << std::endl;
 
 	// Kill threads
-	stayAlive = false;
+	mStayAlive = false;
 
 	// detach threads
-	for (auto &t : threads)
+	for (auto &t : mThreads)
 	{
 		t.join();
 	}
 }
 
 
-void Test::ping(unsigned int domainID)
+void Test::ping(STAT &stat)
 {
-	const std::string domainName = addresses.at(domainID);
 	// Create local Windows Command for pinging domains/IPs
-	const std::string command = "ping " + domainName + " -n 1 > NUL";
+	const std::string command = "ping " + stat.address + " -n 1 > NUL";
 	bool reachable = false;
 
 	do
@@ -82,50 +88,60 @@ void Test::ping(unsigned int domainID)
 		// reachable
 		if (system(command.c_str()) == 0)
 		{
-			updateStatusList(domainID, true);
+			mStatsMutex.lock();
+			update(stat, true);
+			mStatsMutex.unlock();
+
 			// delay ping if successful 
-			Sleep(delayLength);
+			Sleep(cDelayLength);
 		}
 		//unreachable
 		else
 		{
-			updateStatusList(domainID, false);
+			mStatsMutex.lock();
+			update(stat, false);
+			mStatsMutex.unlock();
 		}
-		UiUpdate = true;
-	} while (stayAlive);
+	} while (mStayAlive);
 
-	std::cout << domainID << " ";
+	std::cout << stat.ID << " ";
 }
 
 
-void Test::updateStatusList(const unsigned int domainID, bool reachable)
+void Test::update(STAT &stat, bool reachable)
 {
-	//StatusMutex.lock();
-	domainStatus[domainID] = reachable;
-	++pingTotal[domainID];
+	const int MAX = 10;
+	++stat.totalOverall;
+	stat.total = stat.totalOverall % MAX;
 	if (reachable == true)
 	{
-		++successfulPings[domainID];
+		++stat.successfulOverall;
+		++stat.successful;
+		if (stat.total == 0)
+		{
+			stat.successful = 0;
+		}
+		stat.reachable = 1;
 	}
-	if (successfulPings.at(domainID) != 0 && pingTotal.at(domainID))
+	else
 	{
-		percentages[domainID] = ((float)successfulPings.at(domainID) / (float)pingTotal.at(domainID)) * 100;
+		stat.reachable = 0;
 	}
+	mUiUpdate = true;
 	// TODO: sort results based on percentage
-	//StatusMutex.unlock();
 }
 
 
-void Test::displayStatusList()
+void Test::display()
 {
-	const std::string SEPERATOR = "---------------------------------------<";
+	const std::string SEPERATOR = "------------------------------------------------------------------------------<";
 
 	do
 	{
 		// Clear Screen on each refresh
-		if (UiUpdate == true)
+		if (mUiUpdate == true)
 		{
-			UiUpdate = false; // reset after updating ui
+			mUiUpdate = false; // reset after updating ui
 
 			system("cls");
 
@@ -135,13 +151,19 @@ void Test::displayStatusList()
 			std::cout << SEPERATOR;
 			std::cout << std::endl;
 			std::cout << std::endl;
+			std::cout << " +/-" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "Total" << "\t" << "%" <<
+				"\t" <<"All:\t" << "Good" << "\t" << "Total" << "\t" << "%";
+			std::cout << std::endl << std::endl;
 
 			// Iterate through domain's list to display its statuses
-			for (int i = 0; i < addresses.size(); ++i)
+			for (int i = 0; i < mStats.size(); ++i)
 			{
 				std::string status;
-				//StatusMutex.lock();
-				unsigned int reachable = domainStatus.at(i);
+
+				mStatsMutex.lock();
+				STAT stat = mStats[i];
+				mStatsMutex.unlock();
+				unsigned int reachable = stat.reachable;
 
 				switch (reachable)
 				{
@@ -162,12 +184,13 @@ void Test::displayStatusList()
 
 				std::cout << "  " + status + "\t";
 				int strlen = 15;
-				if (addresses.at(i).length() < strlen) strlen = addresses.at(i).length();
+				if (stat.address.length() < strlen) strlen = stat.address.length();
 				for (int s = 0; s < strlen; ++s)
 				{
-					std::cout << addresses[i][s];
+					std::cout << stat.address[s];
 				}
-				std::cout << "\t" << "(" + std::to_string(successfulPings.at(i)) + "/" + std::to_string(pingTotal.at(i)) + ")" + " " + std::to_string(percentages.at(i)) + "%";
+				std::cout << "\t" << stat.successful << "\t" << stat.total << "\t" << stat.percentage() << "%" << "\t|\t" <<
+					stat.successfulOverall << "\t" << stat.totalOverall << "\t" << stat.percentageOverall() << "%";
 				std::cout << std::endl;
 
 			}
@@ -178,5 +201,5 @@ void Test::displayStatusList()
 			std::cout << std::endl;
 			std::cout << "Press \"Enter\" to exit." << std::endl;
 		}
-	} while (stayAlive);
+	} while (mStayAlive);
 }
