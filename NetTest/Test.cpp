@@ -110,7 +110,7 @@ void Test::ping(STAT &stat)
 
 void Test::update(STAT &stat, bool reachable)
 {
-	const int MAX = 10;
+	const int MAX = 100;
 	++stat.totalOverall;
 	stat.total = stat.totalOverall % MAX;
 	if (reachable == true)
@@ -134,7 +134,7 @@ void Test::update(STAT &stat, bool reachable)
 
 void Test::display()
 {
-	const std::string SEPERATOR = "------------------------------------------------------------------------------<";
+	const std::string SEPERATOR = "--------------------------------------------------------------------------------";
 
 	do
 	{
@@ -149,7 +149,6 @@ void Test::display()
 			std::cout << "      Net Test " << VERSION << std::endl;
 			std::cout << std::endl;
 			std::cout << SEPERATOR;
-			std::cout << std::endl;
 			std::cout << std::endl;
 			std::cout << " +/-" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "Total" << "\t" << "%" <<
 				"\t" <<"All:\t" << "Good" << "\t" << "Total" << "\t" << "%";
