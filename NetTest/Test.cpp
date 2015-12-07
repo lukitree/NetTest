@@ -2,7 +2,7 @@
 
 
 Test::Test()
-	: cDelayLength(1000)
+	: cDelayLength(2000)
 	, mStayAlive(true)
 	, mUiUpdate(true)
 {
@@ -10,12 +10,13 @@ Test::Test()
 	// Can contain Domain Names or IPs
 	std::vector<std::string> addresses =
 	{
-		"192.168.1.1",
-		"google.com",
-		"googlr.com",
-		"google.co.uk",
-		"google.co.jp",
-		"google.ru",
+		"192.168.1.1",		// Router IP
+		"google.com",		// Google
+		"8.8.8.8",		// Google DNS 1
+		"8.8.4.4",		// Google DNS 2
+		"139.130.4.5",		// Austrailian DNS
+		"208.67.222.222",	// OpenDNS 1
+		"208.67.220.220",	// OpenDNS 2
 	};
 
 	for (auto &i : addresses)
@@ -179,14 +180,22 @@ void Test::display()
 					status = "!";
 				}
 
-				//StatusMutex.unlock();
-
 				std::cout << "  " + status + "\t";
-				int strlen = 15;
-				if (stat.address.length() < strlen) strlen = stat.address.length();
+				const int LENGTH = 15;
+				int strlen = LENGTH;
+				int diff = 0;
+				if (stat.address.length() < LENGTH)
+				{
+					strlen = stat.address.length();
+					diff = LENGTH - stat.address.length();
+				}
 				for (int s = 0; s < strlen; ++s)
 				{
 					std::cout << stat.address[s];
+				}
+				for (int space = 0; space < diff; ++space)
+				{
+					std::cout << " ";
 				}
 				std::cout << "\t" << stat.successful << "\t" << stat.total << "\t" << stat.percentage() << "%" << "\t|\t" <<
 					stat.successfulOverall << "\t" << stat.totalOverall << "\t" << stat.percentageOverall() << "%";
