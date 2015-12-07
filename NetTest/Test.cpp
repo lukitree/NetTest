@@ -126,7 +126,7 @@ void Test::displayStatusList()
 		system("cls");
 
 		// Program Heading
-		std::cout << "      Net Tester " << VERSION << std::endl;
+		std::cout << "      Net Test " << VERSION << std::endl;
 		std::cout << std::endl;
 		std::cout << SEPERATOR;
 		std::cout << std::endl;
