@@ -7,7 +7,7 @@
 #include <iostream>
 #include <Windows.h>
 
-const std::string VERSION = "v1.0";
+const std::string VERSION = "v1.1";
 
 struct STAT
 {
