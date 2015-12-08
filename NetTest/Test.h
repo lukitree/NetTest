@@ -12,14 +12,17 @@ const std::string VERSION = "v1.1";
 struct STAT
 {
 	std::string					address;
-	unsigned int					total;
+	unsigned int					total() { return totalOverall % MAX; }
 	unsigned int					totalOverall;
 	unsigned int 					successful;
 	unsigned int					successfulOverall;
-	unsigned int 					percentage() { return ((float)successful / (float)total) * 100; };
-	unsigned int 					percentageOverall() { return ((float)successfulOverall / (float)totalOverall) * 100; };
+	unsigned int 					percentage() { return ((float)successful / (float)total()) * 100; }
+	unsigned int 					percentageOverall() { return ((float)successfulOverall / (float)totalOverall) * 100; }
 	unsigned int 					reachable;
 	unsigned int					ID;
+
+private:
+	const int					MAX = 100;
 };
 
 class Test

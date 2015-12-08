@@ -24,7 +24,7 @@ Test::Test()
 		static int id = 0;
 		STAT stat;
 		stat.address = i;
-		stat.total = 0;
+		//stat.total = 0;
 		stat.totalOverall = 0;
 		stat.successful = 0;
 		stat.successfulOverall = 0;
@@ -111,22 +111,20 @@ void Test::ping(STAT &stat)
 
 void Test::update(STAT &stat, bool reachable)
 {
-	const int MAX = 100;
 	++stat.totalOverall;
-	stat.total = stat.totalOverall % MAX;
 	if (reachable == true)
 	{
 		++stat.successfulOverall;
 		++stat.successful;
-		if (stat.total == 0)
-		{
-			stat.successful = 0;
-		}
 		stat.reachable = 1;
 	}
 	else
 	{
 		stat.reachable = 0;
+	}
+	if (stat.total() == 0 || stat.total() > 100)
+	{
+		stat.successful = 0;
 	}
 	mUiUpdate = true;
 	// TODO: sort results based on percentage
@@ -197,7 +195,7 @@ void Test::display()
 				{
 					std::cout << " ";
 				}
-				std::cout << "\t" << stat.successful << "\t" << stat.total << "\t" << stat.percentage() << "%" << "\t|\t" <<
+				std::cout << "\t" << stat.successful << "\t" << stat.total() << "\t" << stat.percentage() << "%" << "\t|\t" <<
 					stat.successfulOverall << "\t" << stat.totalOverall << "\t" << stat.percentageOverall() << "%";
 				std::cout << std::endl;
 
