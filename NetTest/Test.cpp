@@ -19,6 +19,7 @@ Test::Test()
 		"208.67.220.220",	// OpenDNS 2
 	};
 
+#ifndef _DEBUG
 	for (auto &i : addresses)
 	{
 		static int id = 0;
@@ -28,11 +29,30 @@ Test::Test()
 		stat.successful = 0;
 		stat.successfulOverall = 0;
 		stat.reachable = 2;
+		stat.delayAdd = 0;
 		stat.ID = id;
 		++id;
 
 		mStats.push_back(stat);
 	}
+#else
+	for (auto &i : addresses)
+	{
+		static int id = 0;
+		STAT stat;
+		stat.address = i;
+		stat.totalOverall = (STAT::MAX / 4) * 3;
+		stat.successful = STAT::MAX / 2;
+		stat.successfulOverall = STAT::MAX / 2;
+		stat.reachable = 2;
+		stat.delayAdd = 2000;
+		stat.ID = id;
+		++id;
+
+		mStats.push_back(stat);
+	}
+#endif	// _DEBUG
+
 }
 
 
@@ -93,7 +113,12 @@ void Test::ping(STAT &stat)
 			mStatsMutex.unlock();
 
 			// normal delay if successful 
-			Sleep(cDelayLength);
+			Sleep(cDelayLength + stat.delayAdd);
+
+			if (stat.delayAdd < cDelayLength * 5)
+			{
+				stat.delayAdd += cDelayLength / 100;
+			}
 		}
 		//unreachable
 		else
@@ -104,10 +129,14 @@ void Test::ping(STAT &stat)
 
 			// half delay if no success
 			Sleep(cDelayLength / 2);
+
+			stat.delayAdd /= 3;
 		}
 	} while (mStayAlive);
 
+#ifdef _DEBUG
 	std::cout << stat.ID << " ";
+#endif	// _DEBUG
 }
 
 
@@ -124,7 +153,7 @@ void Test::update(STAT &stat, bool reachable)
 	{
 		stat.reachable = 0;
 	}
-	if (stat.total() == 0 || stat.total() > 100)
+	if (stat.total() == 0 || stat.total() > STAT::MAX)
 	{
 		stat.successful = 0;
 	}
@@ -136,6 +165,7 @@ void Test::update(STAT &stat, bool reachable)
 void Test::display()
 {
 	const std::string SEPERATOR = "--------------------------------------------------------------------------------";
+	const std::string EMPTY_LINE = "\t\t\t\t\t\t|\n";
 
 	do
 	{
@@ -150,10 +180,10 @@ void Test::display()
 			std::cout << "      Net Test " << VERSION << std::endl;
 			std::cout << std::endl;
 			std::cout << SEPERATOR;
-			std::cout << std::endl;
-			std::cout << " +/-" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "Total" << "\t" << "%" <<
-				"\t" <<"All:\t" << "Good" << "\t" << "Total" << "\t" << "%";
-			std::cout << std::endl << std::endl;
+			std::cout << EMPTY_LINE;
+			std::cout << "  Last" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "All(" << STAT::MAX << ")" << "\t%\t|" << "" <<
+				"\t" << "GOOD" << "\t" << "ALL" << "\t" << "%\t";
+			std::cout << EMPTY_LINE;
 
 			// Iterate through domain's list to display its statuses
 			for (int i = 0; i < mStats.size(); ++i)
@@ -168,16 +198,16 @@ void Test::display()
 				switch (reachable)
 				{
 				case 0:	    // unreachable
-					status = "-";
+					status = "DOWN";
 					break;
 				case 1:	    // reachable
-					status = "+";
+					status = " UP";
 					break;
 				case 2:	    // pending testing
-					status = "?";
+					status = "????";
 					break;
 				default:    // error
-					status = "!";
+					status = "Err!";
 				}
 
 				std::cout << "  " + status + "\t";
@@ -203,7 +233,7 @@ void Test::display()
 
 			}
 
-			std::cout << std::endl;
+			std::cout << EMPTY_LINE;
 			std::cout << SEPERATOR;
 			std::cout << std::endl;
 			std::cout << std::endl;
