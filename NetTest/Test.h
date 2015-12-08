@@ -43,11 +43,6 @@ private:
 
 private:
 	std::vector<std::thread>			mThreads;
-	//std::vector<std::string> 			addresses;
-	//std::vector<unsigned int>			domainStatus;
-	//std::vector<unsigned int>			pingTotal;
-	//std::vector<unsigned int>			successfulPings;
-	//std::vector<unsigned int>			percentages;
 	std::vector<STAT>				mStats;
 	std::mutex					mStatsMutex;
 	bool						mStayAlive;

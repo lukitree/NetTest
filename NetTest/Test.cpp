@@ -24,7 +24,6 @@ Test::Test()
 		static int id = 0;
 		STAT stat;
 		stat.address = i;
-		//stat.total = 0;
 		stat.totalOverall = 0;
 		stat.successful = 0;
 		stat.successfulOverall = 0;
@@ -93,7 +92,7 @@ void Test::ping(STAT &stat)
 			update(stat, true);
 			mStatsMutex.unlock();
 
-			// delay ping if successful 
+			// normal delay if successful 
 			Sleep(cDelayLength);
 		}
 		//unreachable
@@ -102,6 +101,9 @@ void Test::ping(STAT &stat)
 			mStatsMutex.lock();
 			update(stat, false);
 			mStatsMutex.unlock();
+
+			// half delay if no success
+			Sleep(cDelayLength / 2);
 		}
 	} while (mStayAlive);
 
