@@ -7,7 +7,9 @@
 #include <iostream>
 #include <Windows.h>
 
-const std::string VERSION = "v1.1";
+const int MAJOR_VERSION = 1;
+const int MINOR_VERSION = 11;
+const std::string VERSION = "v" + std::to_string(MAJOR_VERSION) + "." + std::to_string(MINOR_VERSION);
 
 struct STAT
 {
