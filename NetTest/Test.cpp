@@ -1,5 +1,12 @@
 #include "Test.h"
 
+// TODO LIST
+// - Make more robust: pipe ping result to thread specific file(unique) and then
+// 	parse file to deal with "Destination Host Unreachable", "Request Timed Out",
+// 	and possibly retrieve ping result (ms)
+//
+// - Sort list based on Recent percentage 
+
 
 Test::Test()
 	: cDelayLength(2000)
@@ -158,7 +165,6 @@ void Test::update(STAT &stat, bool reachable)
 		stat.successful = 0;
 	}
 	mUiUpdate = true;
-	// TODO: sort results based on percentage
 }
 
 
