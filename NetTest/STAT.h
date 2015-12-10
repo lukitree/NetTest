@@ -25,7 +25,7 @@ public:
 	uint				ID;
 	uint				delayAdd;
 
-	static const int		MAX = (100);
+	static const int		MAX = (100 / 2);
 
 private:
 	std::array<boolPair, MAX>	currentData;

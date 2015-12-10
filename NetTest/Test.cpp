@@ -26,7 +26,6 @@ Test::Test()
 		"208.67.220.220",	// OpenDNS 2
 	};
 
-#ifndef _DEBUG
 	for (auto &i : addresses)
 	{
 		static int id = 0;
@@ -41,20 +40,13 @@ Test::Test()
 
 		mStats.push_back(stat);
 	}
-#else
-	for (auto &i : addresses)
-	{
-		static int id = 0;
-		STAT stat;
-		stat.address = i;
-		stat.totalOverall = (STAT::MAX / 4) * 3;
-		stat.successfulOverall = STAT::MAX / 2;
-		stat.reachable = 2;
-		stat.delayAdd = 2000;
-		stat.ID = id;
-		++id;
 
-		mStats.push_back(stat);
+#ifdef _DEBUG
+	for (auto &i : mStats)
+	{
+		i.totalOverall = i.total();
+		i.successfulOverall = i.successful();
+		i.delayAdd = cDelayLength / 2;
 	}
 
 	for (int i = 0; i < mStats.size(); ++i)
