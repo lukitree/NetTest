@@ -48,7 +48,6 @@ Test::Test()
 		STAT stat;
 		stat.address = i;
 		stat.totalOverall = (STAT::MAX / 4) * 3;
-		//stat.successful = STAT::MAX / 2;
 		stat.successfulOverall = STAT::MAX / 2;
 		stat.reachable = 2;
 		stat.delayAdd = 2000;
@@ -199,7 +198,7 @@ void Test::display()
 			std::cout << std::endl;
 			std::cout << SEPERATOR;
 			std::cout << EMPTY_LINE;
-			std::cout << "  Last" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "All(" << STAT::MAX << ")" << "\t%\t|" << "" <<
+			std::cout << "  Last" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "All:" << STAT::MAX << "\t%\t|" << "" <<
 				"\t" << "GOOD" << "\t" << "ALL" << "\t" << "%\t";
 			std::cout << EMPTY_LINE;
 
