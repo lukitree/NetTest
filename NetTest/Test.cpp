@@ -33,7 +33,6 @@ Test::Test()
 		STAT stat;
 		stat.address = i;
 		stat.totalOverall = 0;
-		stat.successful = 0;
 		stat.successfulOverall = 0;
 		stat.reachable = 2;
 		stat.delayAdd = 0;
@@ -49,7 +48,7 @@ Test::Test()
 		STAT stat;
 		stat.address = i;
 		stat.totalOverall = (STAT::MAX / 4) * 3;
-		stat.successful = STAT::MAX / 2;
+		//stat.successful = STAT::MAX / 2;
 		stat.successfulOverall = STAT::MAX / 2;
 		stat.reachable = 2;
 		stat.delayAdd = 2000;
@@ -57,6 +56,21 @@ Test::Test()
 		++id;
 
 		mStats.push_back(stat);
+	}
+
+	for (int i = 0; i < mStats.size(); ++i)
+	{
+		for (int ii = 0; ii < (STAT::MAX / 3) * 2; ++ii)
+		{
+			if (i % 2 == 0)
+			{
+				mStats.at(i).add(true);
+			}
+			else
+			{
+				mStats.at(i).add(false);
+			}
+		}
 	}
 #endif	// _DEBUG
 
@@ -153,16 +167,14 @@ void Test::update(STAT &stat, bool reachable)
 	if (reachable == true)
 	{
 		++stat.successfulOverall;
-		++stat.successful;
+		//++stat.successful;
+		stat.add(true);
 		stat.reachable = 1;
 	}
 	else
 	{
 		stat.reachable = 0;
-	}
-	if (stat.total() == 0 || stat.total() > STAT::MAX)
-	{
-		stat.successful = 0;
+		stat.add(false);
 	}
 	mUiUpdate = true;
 }
@@ -233,7 +245,7 @@ void Test::display()
 				{
 					std::cout << " ";
 				}
-				std::cout << "\t" << stat.successful << "\t" << stat.total() << "\t" << stat.percentage() << "%" << "\t|\t" <<
+				std::cout << "\t" << stat.successful() << "\t" << stat.total() << "\t" << stat.percentage() << "%" << "\t|\t" <<
 					stat.successfulOverall << "\t" << stat.totalOverall << "\t" << stat.percentageOverall() << "%";
 				std::cout << std::endl;
 

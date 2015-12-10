@@ -10,7 +10,7 @@
 #include "STAT.h"
 
 const int MAJOR_VERSION = 1;
-const int MINOR_VERSION = 20;
+const int MINOR_VERSION = 22;
 const std::string VERSION = "v" + std::to_string(MAJOR_VERSION) + "." + std::to_string(MINOR_VERSION);
 
 class Test
