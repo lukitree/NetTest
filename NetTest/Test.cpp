@@ -182,7 +182,7 @@ void Test::update(STAT &stat, bool reachable)
 void Test::display()
 {
 	const std::string SEPERATOR = "--------------------------------------------------------------------------------";
-	const std::string EMPTY_LINE = "\t\t\t\t\t\t|\n";
+	const std::string EMPTY_LINE = "\t\t\t\t\t\t |\n";
 
 	do
 	{
@@ -198,7 +198,7 @@ void Test::display()
 			std::cout << std::endl;
 			std::cout << SEPERATOR;
 			std::cout << EMPTY_LINE;
-			std::cout << "  Last" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "All:" << STAT::MAX << "\t%\t|" << "" <<
+			std::cout << "  Last" << "\t" << "Address" << "\t\t" << "Good" << "\t" << "All:" << STAT::MAX << "\t%\t |" << "" <<
 				"\t" << "GOOD" << "\t" << "ALL" << "\t" << "%\t";
 			std::cout << EMPTY_LINE;
 
@@ -244,7 +244,7 @@ void Test::display()
 				{
 					std::cout << " ";
 				}
-				std::cout << "\t" << stat.successful() << "\t" << stat.total() << "\t" << stat.percentage() << "%" << "\t|\t" <<
+				std::cout << "\t" << stat.successful() << "\t" << stat.total() << "\t" << stat.percentage() << "%" << "\t |\t" <<
 					stat.successfulOverall << "\t" << stat.totalOverall << "\t" << stat.percentageOverall() << "%";
 				std::cout << std::endl;
 
