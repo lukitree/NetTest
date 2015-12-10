@@ -9,8 +9,7 @@
 
 
 Test::Test()
-	: cDelayLength(1000)
-	, mStayAlive(true)
+	: mStayAlive(true)
 	, mUiUpdate(true)
 {
 	// Addresses to monitor
@@ -125,11 +124,22 @@ void Test::ping(STAT &stat)
 			mStatsMutex.unlock();
 
 			// normal delay if successful 
-			Sleep(cDelayLength + stat.delayAdd);
-
-			if (stat.delayAdd < cDelayLength * 10)
+			if (stat.delayAdd < cDelayLength)
 			{
-				stat.delayAdd += cDelayLength / 100;
+				Sleep(cDelayLength);
+			}
+			else
+			{
+				Sleep(stat.delayAdd);
+			}
+
+			if (stat.delayAdd < cMaxDelayAdd)
+			{
+				stat.delayAdd += 100;
+			}
+			else
+			{
+				stat.delayAdd = cMaxDelayAdd;
 			}
 		}
 		//unreachable
@@ -142,7 +152,20 @@ void Test::ping(STAT &stat)
 			// half delay if no success
 			Sleep(cDelayLength / 2);
 
-			stat.delayAdd /= 3;
+			stat.delayAdd /= 2;
+
+			uint diff = stat.delayAdd % 100;
+
+			if (diff >= 50)
+			{
+				stat.delayAdd -= diff;
+				stat.delayAdd += 100;
+			}
+			else
+			{
+				stat.delayAdd -= diff;
+			}
+
 		}
 	} while (mStayAlive);
 
@@ -247,6 +270,15 @@ void Test::display()
 			std::cout << std::endl;
 			std::cout << std::endl;
 			std::cout << "Press \"Enter\" to exit." << std::endl;
+#ifdef _DEBUG
+			std::cout << std::endl;
+			std::cout << "Debug:";
+
+			for (auto &i : mStats)
+			{
+				std::cout << "\t" << i.delayAdd;
+			}
+#endif // _DEBUG
 		}
 	} while (mStayAlive);
 }
