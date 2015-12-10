@@ -42,13 +42,6 @@ Test::Test()
 	}
 
 #ifdef _DEBUG
-	for (auto &i : mStats)
-	{
-		i.totalOverall = i.total();
-		i.successfulOverall = i.successful();
-		i.delayAdd = cDelayLength / 2;
-	}
-
 	for (int i = 0; i < mStats.size(); ++i)
 	{
 		for (int ii = 0; ii < (STAT::MAX / 3) * 2; ++ii)
@@ -62,6 +55,13 @@ Test::Test()
 				mStats.at(i).add(false);
 			}
 		}
+	}
+
+	for (auto &i : mStats)
+	{
+		i.totalOverall = i.total();
+		i.successfulOverall = i.successful();
+		i.delayAdd = cDelayLength / 2;
 	}
 #endif	// _DEBUG
 
