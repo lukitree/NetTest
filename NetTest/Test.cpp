@@ -9,7 +9,7 @@
 
 
 Test::Test()
-	: cDelayLength(2000)
+	: cDelayLength(1000)
 	, mStayAlive(true)
 	, mUiUpdate(true)
 {
@@ -127,7 +127,7 @@ void Test::ping(STAT &stat)
 			// normal delay if successful 
 			Sleep(cDelayLength + stat.delayAdd);
 
-			if (stat.delayAdd < cDelayLength * 5)
+			if (stat.delayAdd < cDelayLength * 10)
 			{
 				stat.delayAdd += cDelayLength / 100;
 			}
