@@ -2,6 +2,7 @@
 
 #include <string>
 #include <array>
+#include <cassert>
 
 typedef unsigned int uint;
 typedef std::pair<bool, bool> boolPair;
@@ -24,7 +25,7 @@ public:
 	uint				ID;
 	uint				delayAdd;
 
-	static const int		MAX = (100 / 5);
+	static const int		MAX = (100);
 
 private:
 	std::array<boolPair, MAX>	currentData;
