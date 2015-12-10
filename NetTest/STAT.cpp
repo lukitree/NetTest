@@ -1,6 +1,6 @@
 #include "STAT.h"
 
-static_assert(STAT::MAX < 1000, "STAT::MAX must be less than 1000");
+static_assert(STAT::MAX < 100, "STAT::MAX must be less than 100");
 
 STAT::STAT()
 	: index(0)
